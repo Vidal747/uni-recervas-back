@@ -1,0 +1,93 @@
+{
+    "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "files": {
+        "ignoreUnknown": false,
+        "includes": ["src/**/*.ts", "*.json", "!dist", "!node_modules"]
+    },
+    "formatter": {
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineWidth": 80,
+        "formatWithErrors": true
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": false,
+            "correctness": {
+                "noUnusedImports": "error",
+                "noUndeclaredDependencies": "error",
+                "noUnusedVariables": {
+                    "level": "warn",
+                    "options": {
+                        "ignoreRestSiblings": true
+                    }
+                }
+            },
+            "suspicious": {
+                "noExplicitAny": "error",
+                "noVar": "error",
+                "noConsole": "off",
+                "noDebugger": "off"
+            },
+            "style": {
+                "noDefaultExport": "off",
+                "useConst": "error",
+                "useImportType": {
+                    "level": "warn",
+                    "fix": "safe",
+                    "options": {
+                        "style": "separatedType"
+                    }
+                },
+                "useExportType": "warn"
+            },
+            "security": {
+                "noBlankTarget": "error",
+                "recommended": true
+            },
+            "performance": {
+                "noBarrelFile": "warn"
+            }
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "enabled": true,
+            "quoteStyle": "single",
+            "trailingCommas": "none",
+            "semicolons": "asNeeded",
+            "lineWidth": 80
+        },
+        "globals": [
+            "console",
+            "process",
+            "Buffer",
+            "setTimeout",
+            "clearTimeout"
+        ]
+    },
+    "json": {
+        "formatter": {
+            "enabled": true,
+            "trailingCommas": "none"
+        },
+        "linter": {
+            "enabled": true
+        }
+    },
+    "assist": {
+        "enabled": true,
+        "actions": {
+            "source": {
+                "organizeImports": "on"
+            }
+        }
+    }
+}
