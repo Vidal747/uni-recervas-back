@@ -1,4 +1,7 @@
 import { createApp } from './app.js'
+import { loadEnvFile } from './config/env.js'
+
+loadEnvFile()
 
 const port = 3000
 

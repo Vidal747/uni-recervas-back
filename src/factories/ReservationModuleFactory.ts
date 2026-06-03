@@ -1,3 +1,5 @@
+import { SmsClient } from '../clients/SmsClient.js'
+import { loadSmsConfig } from '../config/sms.js'
 import { ReservationController } from '../controllers/ReservationController.js'
 import { EventBus } from '../events/EventBus.js'
 import { ReservationFacade } from '../facade/ReservationFacade.js'
@@ -8,6 +10,7 @@ import { NotificationObserver } from '../observers/NotificationObserver.js'
 import { NotificationRepository } from '../repositories/NotificationRepository.js'
 import { ReservationRepository } from '../repositories/ReservationRepository.js'
 import { SpaceRepository } from '../repositories/SpaceRepository.js'
+import { UserRepository } from '../repositories/UserRepository.js'
 import { BlockedPeriodValidationStrategy } from '../strategies/BlockedPeriodValidationStrategy.js'
 import { OverlapValidationStrategy } from '../strategies/OverlapValidationStrategy.js'
 import { TimeRangeValidationStrategy } from '../strategies/TimeRangeValidationStrategy.js'
@@ -18,9 +21,13 @@ export class ReservationModuleFactory {
         const spaceRepository = new SpaceRepository()
         const reservationRepository = new ReservationRepository()
         const notificationRepository = new NotificationRepository()
+        const userRepository = new UserRepository()
+        const smsClient = new SmsClient(loadSmsConfig())
 
         const notificationObserver = new NotificationObserver(
-            notificationRepository
+            notificationRepository,
+            userRepository,
+            smsClient
         )
         eventBus.attach(notificationObserver)
 

@@ -1,9 +1,11 @@
+import type { SmsClient } from '../clients/SmsClient.js'
 import type {
     ReservationEventName,
     ReservationEventObserver,
     ReservationEventPayload
 } from '../events/ReservationEventObserver.js'
 import type { NotificationRepository } from '../repositories/NotificationRepository.js'
+import type { UserRepository } from '../repositories/UserRepository.js'
 
 const SUPPORTED_EVENTS: ReservationEventName[] = [
     'reservation.created',
@@ -16,7 +18,9 @@ export class NotificationObserver implements ReservationEventObserver {
     private readonly pendingJobs: Promise<void>[] = []
 
     public constructor(
-        private readonly notificationRepository: NotificationRepository
+        private readonly notificationRepository: NotificationRepository,
+        private readonly userRepository: UserRepository,
+        private readonly smsClient: SmsClient
     ) {}
 
     public supports(event: ReservationEventName): boolean {
@@ -48,10 +52,33 @@ export class NotificationObserver implements ReservationEventObserver {
         this.pendingJobs.length = 0
     }
 
+    private async persistAndSendSms(input: {
+        studentId: string
+        reservationId: string
+        title: string
+        message: string
+        type: 'REMINDER' | 'APPROVAL' | 'REJECTION' | 'CANCELLATION'
+    }): Promise<void> {
+        await this.notificationRepository.create(input)
+
+        const phone = await this.userRepository.findPhoneByUserId(
+            input.studentId
+        )
+
+        if (phone === null) {
+            return
+        }
+
+        await this.smsClient.sendMessage(
+            phone,
+            `${input.title}: ${input.message}`
+        )
+    }
+
     private async handleReservationCreated(
         payload: ReservationEventPayload
     ): Promise<void> {
-        await this.notificationRepository.create({
+        await this.persistAndSendSms({
             studentId: payload.reservation.studentId,
             reservationId: payload.reservation.id,
             title: 'Reservation created',
@@ -64,7 +91,7 @@ export class NotificationObserver implements ReservationEventObserver {
     private async handleReservationApproved(
         payload: ReservationEventPayload
     ): Promise<void> {
-        await this.notificationRepository.create({
+        await this.persistAndSendSms({
             studentId: payload.reservation.studentId,
             reservationId: payload.reservation.id,
             title: 'Reservation approved',
@@ -76,7 +103,7 @@ export class NotificationObserver implements ReservationEventObserver {
     private async handleReservationRejected(
         payload: ReservationEventPayload
     ): Promise<void> {
-        await this.notificationRepository.create({
+        await this.persistAndSendSms({
             studentId: payload.reservation.studentId,
             reservationId: payload.reservation.id,
             title: 'Reservation rejected',
@@ -88,7 +115,7 @@ export class NotificationObserver implements ReservationEventObserver {
     private async handleReservationCancelled(
         payload: ReservationEventPayload
     ): Promise<void> {
-        await this.notificationRepository.create({
+        await this.persistAndSendSms({
             studentId: payload.reservation.studentId,
             reservationId: payload.reservation.id,
             title: 'Reservation cancelled',
