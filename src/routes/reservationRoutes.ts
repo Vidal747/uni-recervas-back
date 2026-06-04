@@ -14,6 +14,7 @@ export function reservationRoutes(controller: ReservationController): Router {
     router.get('/spaces/:id/availability', wrap(controller.checkAvailability))
     router.post('/', wrap(controller.createReservation))
     router.get('/my', wrap(controller.listMyReservations))
+    router.get('/pending', wrap(controller.listPendingReservations))
     router.delete('/:id/cancel', wrap(controller.cancelReservation))
     router.patch('/:id/review', wrap(controller.reviewReservation))
     router.get('/:id', wrap(controller.getReservationDetail))

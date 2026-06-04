@@ -278,6 +278,42 @@ export class ReservationRepository {
         }))
     }
 
+    public async listPending(): Promise<ReservationListItem[]> {
+        const [rows] = await this.pool.query<ReservationListRow[]>(
+            `
+      SELECT
+        r.id,
+        r.student_id,
+        r.space_id,
+        r.date,
+        r.start_time,
+        r.end_time,
+        r.purpose,
+        r.status,
+        r.observations,
+        r.created_at,
+        r.updated_at,
+        s.name AS space_name,
+        s.type AS space_type,
+        s.location AS space_location
+      FROM reservations r
+      INNER JOIN spaces s ON s.id = r.space_id
+      WHERE r.status = 'PENDING'
+      ORDER BY r.created_at ASC, r.date ASC, r.start_time ASC
+    `
+        )
+
+        return rows.map((row) => ({
+            reservation: Reservation.fromRow(row),
+            space: {
+                id: row.space_id,
+                name: row.space_name,
+                type: row.space_type,
+                location: row.space_location
+            }
+        }))
+    }
+
     public async findStudentByUserId(
         userId: string
     ): Promise<UserRoleRow | null> {

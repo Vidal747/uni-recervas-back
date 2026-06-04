@@ -24,6 +24,7 @@ export class SmsClient {
             body: JSON.stringify({
                 companyId: this.config.companyId,
                 storageType: 'queue',
+                fullTime: true, 
                 message: {
                     type: '2',
                     to: [normalizedPhone],

@@ -79,6 +79,12 @@ export class ReservationFacade {
         return reservation
     }
 
+    public async listPendingReservations(
+        userId: string
+    ): Promise<ReservationListItem[]> {
+        return this.reservationModel.listPendingReservations(userId)
+    }
+
     public async getReservationDetail(
         userId: string,
         reservationId: string

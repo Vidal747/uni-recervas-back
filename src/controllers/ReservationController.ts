@@ -78,6 +78,15 @@ export class ReservationController {
         this.respondJson(response, reservation)
     }
 
+    public listPendingReservations = async (
+        request: Request,
+        response: Response
+    ): Promise<void> => {
+        const userId = this.requireUserId(request)
+        const reservations = await this.facade.listPendingReservations(userId)
+        this.respondJson(response, reservations)
+    }
+
     public getReservationDetail = async (
         request: Request,
         response: Response

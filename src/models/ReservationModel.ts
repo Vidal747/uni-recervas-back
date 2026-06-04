@@ -187,6 +187,22 @@ export class ReservationModel {
         return reviewedReservation
     }
 
+    public async listPendingReservations(
+        userId: string
+    ): Promise<ReservationListItem[]> {
+        const administrator =
+            await this.reservationRepository.findAdministratorByUserId(userId)
+
+        if (administrator === null) {
+            throw new AppError(
+                403,
+                'Only administrators can list pending reservations'
+            )
+        }
+
+        return this.reservationRepository.listPending()
+    }
+
     public async getReservationDetail(
         userId: string,
         reservationId: string
