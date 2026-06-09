@@ -8,4 +8,3 @@ export class SpaceModel {
         return this.spaceRepository.listAvailableSpacesWithResources()
     }
 }
- 
